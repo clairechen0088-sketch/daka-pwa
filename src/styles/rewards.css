@@ -1,0 +1,461 @@
+/* src/styles/rewards.css – 奖励页样式 V2.1 */
+/* 暑假任务打卡积分系统 V2 */
+/* 紧凑 3 列网格 */
+
+/* ─── 兑换规则提示 ─── */
+.rewards-rules-hint {
+  margin-bottom: var(--space-sm);
+}
+
+.rewards-rules-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-card);
+  border-radius: var(--card-radius);
+  padding: var(--space-sm) var(--space-md);
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ─── 积分余额卡片 ─── */
+.balance-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md);
+  background: linear-gradient(135deg, var(--color-bg-card), var(--color-bg-input));
+  border-radius: var(--card-radius);
+  margin-bottom: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.balance-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.balance-value {
+  font-size: var(--font-size-xxl);
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.balance-lifetime {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-xs);
+}
+
+/* ─── Tier 分组 ─── */
+.tier-group {
+  margin-bottom: var(--space-md);
+}
+
+.tier-group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+  font-weight: 700;
+  font-size: var(--font-size-xs);
+}
+
+.tier-group-header .tier-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.tier-group-header .tier-dot.small  { background: var(--color-tier-small); }
+.tier-group-header .tier-dot.medium { background: var(--color-tier-medium); }
+.tier-group-header .tier-dot.high   { background: var(--color-tier-high); }
+.tier-group-header .tier-dot.super  { background: var(--color-tier-super); }
+
+/* ─── 奖励卡片（紧凑 3 列网格）─── */
+.rewards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-xs);
+}
+
+.reward-card {
+  background: var(--color-bg-card);
+  border-radius: 8px;
+  padding: var(--space-sm);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.reward-card:active {
+  transform: scale(0.96);
+}
+
+/* ─── 可兑换奖励：金色发光边框 ─── */
+.reward-card.available-card {
+  border: 1.5px solid rgba(250, 204, 21, 0.35);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.12);
+  background: linear-gradient(135deg, var(--color-bg-card), rgba(250, 204, 21, 0.04));
+}
+
+/* ─── 不可兑换奖励：保持可见，不灰死 ─── */
+.reward-card.locked-card {
+  opacity: 0.78;
+}
+
+/* ─── 积分差额提示 ─── */
+.reward-card .reward-diff {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-warning);
+  margin-top: 1px;
+  padding: 1px 6px;
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 4px;
+}
+
+.reward-card .reward-icon {
+  font-size: 22px;
+}
+
+.reward-card .reward-name {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.reward-card .reward-cost {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.reward-card .reward-btn {
+  width: 100%;
+  padding: 2px var(--space-xs);
+  border: none;
+  border-radius: var(--btn-radius);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-top: 2px;
+}
+
+.reward-card .reward-btn.available {
+  background: var(--color-success);
+  color: white;
+}
+
+.reward-card .reward-btn.locked {
+  background: var(--color-bg-input);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.reward-card .reward-btn.pending {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--color-warning);
+  cursor: pointer;
+}
+
+.reward-card .reward-btn.limit-reached {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-danger);
+  cursor: not-allowed;
+}
+
+/* ─── 兑换确认弹窗 ─── */
+.redeem-confirm {
+  text-align: center;
+}
+
+.redeem-confirm .redeem-confirm-icon {
+  font-size: 48px;
+  margin-bottom: var(--space-md);
+}
+
+.redeem-confirm .redeem-confirm-name {
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+}
+
+.redeem-confirm .redeem-confirm-cost {
+  color: var(--color-accent);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin: var(--space-sm) 0;
+}
+
+.redeem-confirm .redeem-confirm-balance {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* ─── 抽奖占位 ─── */
+.lottery-placeholder {
+  margin-top: var(--space-xl);
+  opacity: 0.5;
+}
+
+/* ─── 积分流水列表 ─── */
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.history-item .history-icon {
+  font-size: 24px;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.history-item .history-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-item .history-desc {
+  font-weight: 500;
+  font-size: var(--font-size-xs);
+}
+
+.history-item .history-time {
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+
+.history-item .history-points {
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.history-item .history-points.positive { color: var(--color-success); }
+.history-item .history-points.negative { color: var(--color-danger); }
+
+.history-item .history-balance {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  min-width: 40px;
+  text-align: right;
+}
+
+/* ─── iPad / 大屏优化 ─── */
+@media (min-width: 600px) {
+  .rewards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .reward-card {
+    padding: var(--space-xs);
+  }
+}
+
+/* ═══════════════════════════════════════════ */
+/* V3: 商城分区 + 券包样式                       */
+/* ═══════════════════════════════════════════ */
+
+/* ─── 分区标题 ─── */
+.store-section {
+  margin-bottom: var(--space-md);
+}
+
+.store-section-header {
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
+  border-radius: 6px;
+  border-left: 3px solid var(--color-accent);
+}
+
+/* ─── 奖励卡片增强 ─── */
+.reward-card .reward-desc {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+.reward-card .reward-meta {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.chip-cat {
+  background: rgba(255,255,255,0.08);
+  color: var(--color-text-secondary);
+  font-size: 8px;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+/* ─── 券包列表 ─── */
+.voucher-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.voucher-card {
+  background: var(--color-bg-card);
+  border-radius: 8px;
+  padding: var(--space-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  border-left: 3px solid var(--color-warning);
+  transition: all var(--transition);
+}
+
+.voucher-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.voucher-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.voucher-name {
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+}
+
+.voucher-desc {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.voucher-meta {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.voucher-app-note {
+  font-size: 9px;
+  color: var(--color-warning);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* ─── 兑换确认增强 ─── */
+.redeem-confirm .redeem-confirm-desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.redeem-confirm .redeem-confirm-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-warning);
+  margin: var(--space-sm) 0;
+  padding: var(--space-xs);
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 4px;
+}
+
+/* ─── 兑换记录增强 ─── */
+.redeem-record-desc {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════ */
+/*  视频指南（孩子端只读展示）                    */
+/* ═══════════════════════════════════════════ */
+.videoguide-section {
+  margin-top: var(--space-md);
+  border-top: 2px solid rgba(255,255,255,0.06);
+  padding-top: var(--space-md);
+}
+
+.videoguide-hint {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-bottom: var(--space-sm);
+}
+
+.videoguide-block {
+  background: var(--color-bg-card);
+  border-radius: var(--card-radius);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.videoguide-block-title {
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-xs);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.videoguide-whitelist .videoguide-block-title {
+  color: var(--color-success);
+}
+
+.videoguide-blacklist .videoguide-block-title {
+  color: var(--color-danger);
+}
+
+.videoguide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.videoguide-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 4px 0;
+  font-size: var(--font-size-sm);
+}
+
+.videoguide-item-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.videoguide-item-title {
+  font-weight: 600;
+}
+
+.videoguide-item-note {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  flex-basis: 100%;
+  padding-left: 20px;
+}
+
+.videoguide-footer {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-top: var(--space-xs);
+  opacity: 0.7;
+}

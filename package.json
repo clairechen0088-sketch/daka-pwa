@@ -1,0 +1,13 @@
+{
+  "name": "daka-pwa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "小学生暑假学习运动打卡积分系统 PWA",
+  "scripts": {
+    "bump-cache": "node scripts/bump-cache-version.js",
+    "check-pwa": "node scripts/check-pwa.js",
+    "deploy:vercel": "node scripts/bump-cache-version.js && node scripts/check-pwa.js && vercel --prod"
+  },
+  "keywords": ["pwa", "checkin", "education"],
+  "license": "UNLICENSED"
+}

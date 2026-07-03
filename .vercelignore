@@ -1,0 +1,33 @@
+# Vercel
+.vercel
+.now
+
+# Dependencies
+node_modules
+
+# Dev files
+.superpowers
+.playwright-mcp
+docs
+
+# Root-level screenshot PNGs (keep icons/avatars)
+/challenge-page-fixed.png
+/challenge-v2_1-final.png
+
+# Debug scripts
+debug-*.js
+
+# Project memory / notes
+CLAUDE.md
+MEMORY.md
+
+# Git
+.git
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Scripts — keep for build step (buildCommand uses scripts/bump-cache-version.js)
+# scripts/*.sh and scripts/*.ps1 are deploy helpers, not needed at runtime but harmless

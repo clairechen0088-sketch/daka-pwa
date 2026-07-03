@@ -1,0 +1,916 @@
+/* src/styles/growth.css – 成长记录模块 V1.2 */
+/* 暑假任务打卡积分系统 V3 */
+
+/* ─── 成长 Tab 切换 ─── */
+.growth-tabs {
+  display: flex;
+  gap: var(--space-xs);
+  background: var(--color-bg-secondary);
+  border-radius: var(--btn-radius);
+  padding: 3px;
+  margin-bottom: var(--space-md);
+  flex-shrink: 0;
+}
+
+.growth-tabs button {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  border-radius: var(--btn-radius);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.growth-tabs button.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.growth-tabs button:active:not(.active) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ─── 余额卡片（紧凑横条）─── */
+.balance-card {
+  background: var(--color-bg-card);
+  border-radius: var(--card-radius);
+  padding: 10px var(--space-md);
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  box-shadow: var(--shadow-card);
+  flex-shrink: 0;
+  min-height: 52px;
+}
+
+.balance-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.balance-value {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.balance-lifetime {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════ */
+/* 暑假进度主卡（紧凑）                       */
+/* ═══════════════════════════════════════════ */
+
+.summer-progress-hero {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.12), rgba(255, 152, 0, 0.08));
+  border: 1px solid rgba(255, 193, 7, 0.25);
+  border-radius: var(--card-radius);
+  padding: 8px var(--space-md);
+  margin-bottom: var(--space-xs);
+  flex-shrink: 0;
+}
+
+.summer-progress-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: 4px;
+}
+
+.summer-progress-icon {
+  font-size: 18px;
+}
+
+.summer-progress-title {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-bright);
+}
+
+.summer-progress-range {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+  display: none; /* V1.3: 合并到 subtext */
+}
+
+/* 紧凑进度条 */
+.summer-progress-bar {
+  height: 8px;
+  background: var(--color-bg-input);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.summer-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, var(--color-accent));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* 主天数 X / 57 */
+.summer-progress-days {
+  float: right;
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  color: var(--color-accent);
+}
+
+/* 辅助说明 */
+.summer-progress-subtext {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ═══════════════════════════════════════════ */
+/* 成长日历 V1.3 — 一屏适配 + 格子直显        */
+/* ═══════════════════════════════════════════ */
+
+/* 月份导航 — 紧凑 */
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.calendar-nav button {
+  background: var(--color-bg-input);
+  border: none;
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.calendar-nav button:active {
+  background: var(--color-bg-card-hover);
+}
+
+.calendar-nav .calendar-month-label {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-bright);
+}
+
+/* 日历网格 — 紧凑 */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.calendar-weekday {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  padding: 2px 0;
+}
+
+/* ─── 日期格子 — 核心 ─── */
+.calendar-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--btn-radius);
+  cursor: pointer;
+  transition: background var(--transition), box-shadow var(--transition);
+  position: relative;
+  min-height: 44px;
+  padding: 3px 1px;
+  gap: 1px;
+  -webkit-tap-highlight-color: transparent;
+  border: 2px solid transparent;
+}
+
+.calendar-day.empty {
+  cursor: default;
+  pointer-events: none;
+}
+
+.calendar-day:hover:not(.empty):not(.future):not(.out-of-summer) {
+  background: var(--color-bg-card);
+}
+
+/* ── 日期数字 — 明亮清晰 ── */
+.calendar-day .day-num {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.2;
+}
+
+/* ── 状态图标 — 小而清晰 ── */
+.calendar-day .day-status {
+  font-size: 11px;
+  line-height: 1;
+  min-height: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── 积分显示 — 小字不抢眼 ── */
+.calendar-day .day-points {
+  font-size: 9px;
+  line-height: 1;
+  color: var(--color-accent);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════ */
+/* 日期状态样式                                */
+/* ═══════════════════════════════════════════ */
+
+/* 今天 — 高亮边框 */
+.calendar-day.today {
+  border-color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.calendar-day.today .day-num {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* 选中日期 — 明显背景 */
+.calendar-day.selected {
+  background: rgba(37, 99, 235, 0.25);
+  border-color: rgba(37, 99, 235, 0.6);
+}
+
+.calendar-day.selected .day-num {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* 已完成日期 — 轻微高亮 */
+.calendar-day.completed {
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.calendar-day.completed .day-num {
+  color: #ffffff;
+}
+
+/* 未完成过去日期 — 可见但不突出 */
+.calendar-day.missed {
+  background: transparent;
+}
+
+.calendar-day.missed .day-num {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.calendar-day.missed .day-status {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* 未来日期 — 降低透明度但可辨 */
+.calendar-day.future {
+  cursor: default;
+  pointer-events: none;
+}
+
+.calendar-day.future .day-num {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.calendar-day.future .day-status,
+.calendar-day.future .day-points {
+  display: none;
+}
+
+/* 非暑假日期 — 更淡 */
+.calendar-day.out-of-summer {
+  cursor: default;
+  pointer-events: none;
+}
+
+.calendar-day.out-of-summer .day-num {
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.calendar-day.out-of-summer.today {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: transparent;
+}
+
+.calendar-day.out-of-summer.today .day-num {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ═══════════════════════════════════════════ */
+/* 图例说明 — 紧凑                             */
+/* ═══════════════════════════════════════════ */
+
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+  padding: 6px 0;
+  flex-shrink: 0;
+}
+
+.calendar-legend .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.calendar-legend .legend-icon {
+  font-size: 12px;
+}
+
+.calendar-legend .legend-dot-missed {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ═══════════════════════════════════════════ */
+/* 日期详情 — 紧凑单行条                       */
+/* ═══════════════════════════════════════════ */
+
+.calendar-day-detail {
+  background: var(--color-bg-card);
+  border-radius: var(--card-radius);
+  padding: 8px var(--space-md);
+  margin-top: var(--space-xs);
+  box-shadow: none;
+  flex-shrink: 0;
+}
+
+/* V1.3: 紧凑模式 — 单行内联 */
+.calendar-day-detail.compact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  min-height: 32px;
+}
+
+.calendar-day-detail.compact .detail-date {
+  font-weight: 700;
+  color: var(--color-text-bright);
+}
+
+.calendar-day-detail.compact .detail-item {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.calendar-day-detail.compact .detail-hint {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.calendar-day-detail.compact .detail-sep {
+  color: rgba(255, 255, 255, 0.12);
+}
+
+/* 保留旧版详情（非 compact）向后兼容 */
+.calendar-day-detail h3 {
+  font-size: var(--font-size-base);
+  margin-bottom: var(--space-sm);
+  color: var(--color-text-bright);
+}
+
+.calendar-day-detail .detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-xs) 0;
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.calendar-day-detail .detail-label {
+  color: var(--color-text-muted);
+}
+
+.calendar-day-detail .detail-value {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════ */
+/* 英语能量 — 孩子端 UI V3                    */
+/* ═══════════════════════════════════════════ */
+
+/* ─── 1. 晋级 Hero 卡（紧凑横向）─── */
+.english-upgrade-hero {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(124, 58, 237, 0.12));
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: var(--card-radius);
+  padding: 14px var(--space-md);
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  box-shadow: var(--shadow-card);
+  flex-shrink: 0;
+  min-height: 80px;
+}
+
+.english-upgrade-hero.hero-celebrate {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(245, 197, 24, 0.12));
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+.english-upgrade-hero.hero-waiting {
+  background: rgba(158, 158, 158, 0.08);
+  border-color: rgba(158, 158, 158, 0.2);
+}
+
+.english-upgrade-hero .hero-emoji {
+  font-size: 36px;
+  flex-shrink: 0;
+}
+
+.english-upgrade-hero .hero-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.english-upgrade-hero .hero-title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-bright);
+  margin-bottom: 2px;
+}
+
+.hero-celebrate .hero-title {
+  color: var(--color-success);
+}
+
+.hero-waiting .hero-title {
+  color: var(--color-text-secondary);
+}
+
+.english-upgrade-hero .hero-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.hero-celebrate .hero-subtitle {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+/* 核心数字 — 醒目但不占满 */
+.english-upgrade-number {
+  font-size: var(--font-size-xxl);
+  font-weight: 800;
+  color: var(--color-accent);
+  line-height: 1;
+  flex-shrink: 0;
+  text-align: center;
+  min-width: 70px;
+}
+
+/* 数字下方的标签行 */
+.english-upgrade-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-bright);
+  margin-bottom: 2px;
+}
+
+/* 小字说明行 */
+.english-upgrade-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 速度估算说明行 */
+.english-upgrade-speed {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  font-style: italic;
+}
+
+/* ─── 2. 可视化区域 ─── */
+.english-visual-section {
+  margin-bottom: var(--space-md);
+  flex-shrink: 0;
+}
+
+/* 三张时间卡片 */
+.english-metric-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.english-metric-card {
+  background: var(--color-bg-card);
+  border-radius: var(--card-radius);
+  padding: 10px var(--space-sm);
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.english-metric-card .metric-icon {
+  font-size: 24px;
+  margin-bottom: var(--space-xs);
+}
+
+.english-metric-card .metric-value {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-bright);
+}
+
+.english-metric-card .metric-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.english-metric-card .metric-sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 饼图 */
+.english-pie-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-md);
+  flex-shrink: 0;
+}
+
+.english-pie {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.english-pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+}
+
+.english-pie-legend .legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.english-pie-legend .legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.english-pie-legend .legend-label {
+  color: var(--color-text-secondary);
+}
+
+.english-pie-legend .legend-percent {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+/* ─── 4. 简洁进度条 ─── */
+.english-progress-section {
+  margin-bottom: var(--space-md);
+  flex-shrink: 0;
+}
+
+.english-progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-sm);
+}
+
+.english-progress-label .progress-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.english-progress-label .progress-percent {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.english-progress {
+  height: 12px;
+  background: var(--color-bg-input);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.english-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-success), var(--color-accent));
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.english-empty {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* 最近 7 天趋势 */
+.english-recent {
+  flex-shrink: 0;
+}
+
+.english-recent h3 {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.english-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.english-recent-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.english-recent-item .recent-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.english-recent-item .recent-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: var(--color-bg-input);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.english-recent-item .recent-bar-fill {
+  height: 100%;
+  background: var(--color-info);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.english-recent-item .recent-value {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  width: 60px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════ */
+/* 积分流水（保持在 growth-points-tab 内）      */
+/* ═══════════════════════════════════════════ */
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--color-bg-card);
+  border-radius: var(--card-radius);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-xs);
+}
+
+.history-icon {
+  font-size: 24px;
+  width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.history-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-desc {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: 2px;
+}
+
+.history-points {
+  font-weight: 700;
+  font-size: var(--font-size-base);
+  flex-shrink: 0;
+}
+
+.history-points.positive { color: var(--color-success); }
+.history-points.negative { color: var(--color-danger); }
+
+.history-balance {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  width: 40px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ─── 响应式：小屏设备饼图缩小 ─── */
+@media (max-width: 360px) {
+  .english-pie-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .english-metric-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══════════════════════════════════════════ */
+/*  iPad / 平板响应式布局 (≥768px)            */
+/* ═══════════════════════════════════════════ */
+@media (min-width: 768px) {
+  /* 余额卡 — 更紧凑 */
+  .balance-card {
+    padding: 8px var(--space-lg);
+    min-height: 44px;
+  }
+
+  /* 暑假进度卡 — 压缩 */
+  .summer-progress-hero {
+    padding: 12px var(--space-lg);
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 英语能量晋级卡 — 压缩 */
+  .english-upgrade-hero {
+    padding: 12px var(--space-lg);
+    min-height: 72px;
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 三列卡片在 iPad 上保持三列，压缩高度 */
+  .english-metric-cards {
+    gap: var(--space-md);
+  }
+
+  .english-metric-card {
+    padding: 10px var(--space-md);
+    min-height: 72px;
+  }
+
+  .english-metric-card .metric-value {
+    font-size: var(--font-size-sm);
+  }
+
+  .english-metric-card .metric-icon {
+    font-size: 20px;
+    margin-bottom: 2px;
+  }
+
+  /* 英语可视化区域加宽 */
+  .english-visual-section {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 饼图在 iPad 上水平排列 */
+  .english-pie-section {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xl);
+  }
+
+  /* 进度条区域加宽 */
+  .english-progress-section {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 最近7天加宽 */
+  .english-recent {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 成长日历加宽 + iPad 适配 */
+  .calendar-grid {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .calendar-day {
+    min-height: 56px;
+    padding: 4px 2px;
+  }
+
+  .calendar-day .day-num {
+    font-size: var(--font-size-base);
+  }
+
+  .calendar-day .day-status {
+    font-size: 14px;
+  }
+
+  .calendar-day .day-points {
+    font-size: 10px;
+  }
+
+  .calendar-nav {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 图例居中 */
+  .calendar-legend {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 紧凑详情条加宽 */
+  .calendar-day-detail.compact {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ─── 大屏 (≥1024px) ─── */
+@media (min-width: 1024px) {
+  .english-upgrade-hero {
+    padding: 14px var(--space-xl);
+  }
+}

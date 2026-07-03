@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="打卡积分">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#0B1024">
+  <meta name="description" content="小学生暑假学习运动打卡积分系统 - 低摩擦习惯积分制">
+  <title>暑假打卡积分</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="src/styles/base.css">
+  <link rel="stylesheet" href="src/styles/challenge.css">
+  <link rel="stylesheet" href="src/styles/rewards.css">
+  <link rel="stylesheet" href="src/styles/parent.css">
+  <link rel="stylesheet" href="src/styles/growth.css">
+
+  <!-- PWA -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.webmanifest">
+  <!-- iOS Safari PWA -->
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="assets/icons/icon-512.png">
+  <!-- Tile icon (Windows / old Safari) -->
+  <meta name="msapplication-TileImage" content="assets/icons/icon-192.png">
+  <meta name="msapplication-TileColor" content="#0B1024">
+
+  <!-- Vendor -->
+  <script src="vendor/dexie.min.js"></script>
+
+  <!-- App Scripts (load order matters: deps first) -->
+  <script src="src/utils.js"></script>
+  <script src="src/db.js"></script>
+  <script src="src/backup.js"></script>
+  <script src="src/rules.js"></script>
+  <script src="src/engine.js"></script>
+  <script src="src/ui/children/challenge.js"></script>
+  <script src="src/ui/children/rewards.js"></script>
+  <script src="src/ui/children/history.js"></script>
+  <script src="src/ui/parent/confirm.js"></script>
+  <script src="src/ui/parent/manage.js"></script>
+  <script src="src/ui/parent/settings.js"></script>
+  <script src="src/ui/parent/videolist.js"></script>
+  <script src="src/ui/pin.js"></script>
+  <script src="src/app.js"></script>
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 页面：孩子端 — 今日挑战                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="page-challenge" class="page active">
+
+      <!-- 状态栏 -->
+      <div class="status-bar" id="challenge-status-bar">
+        <div class="level-badge">
+          <span id="challenge-avatar">🦊</span>
+          <span id="challenge-name">小朋友</span>
+          <span class="chip chip-study" id="challenge-level">Lv.1</span>
+        </div>
+        <div class="streak-badge">
+          <span class="streak-flame">🔥</span>
+          <span id="challenge-streak">0天</span>
+        </div>
+        <div class="letter-badge" id="challenge-letter-badge" style="display:none;" title="查看今日来信">
+          <span class="letter-icon">💌</span>
+          <span id="challenge-letter-badge-text">今日来信</span>
+        </div>
+        <div class="points-badge">
+          ⭐ <span id="challenge-points">0</span>
+        </div>
+      </div>
+
+      <!-- 页面状态标题 -->
+      <div class="page-header">
+        <h1 id="challenge-title">今日挑战</h1>
+        <span id="challenge-date" class="text-muted"></span>
+      </div>
+
+      <!-- 页面状态提示 -->
+      <div id="challenge-state-banner" class="state-banner"></div>
+
+      <!-- 今日总进度主卡 -->
+      <div id="challenge-progress-summary" class="progress-summary"></div>
+
+      <!-- 推荐先做 -->
+      <div id="challenge-recommended" class="recommended-section" style="display:none;"></div>
+
+      <!-- 任务列表（滚动由 .page 容器统一处理，不嵌套滚动）-->
+      <div id="challenge-task-list">
+        <!-- 动态渲染任务卡片 -->
+      </div>
+
+      <!-- 预计得分 -->
+      <div id="challenge-estimate" class="estimate-bar" style="display:none;">
+        <span class="text-muted">预计得分</span>
+        <span id="challenge-estimate-points" class="text-accent">+0</span>
+      </div>
+
+      <!-- 提交按钮 -->
+      <div id="challenge-submit-area" class="submit-area"></div>
+
+      <!-- V1.5: 家长成长评分区域（所有任务完成后显示）-->
+      <div id="challenge-parent-rating" class="parent-rating-section" style="display:none;">
+        <div class="parent-rating-header">
+          <span>👨‍👩‍👧</span>
+          <span>今天爸爸妈妈表现怎么样？</span>
+        </div>
+        <div id="parent-rating-items">
+          <!-- 动态渲染 3 个评分项 -->
+        </div>
+        <div class="compliment-section" id="compliment-section">
+          <div class="compliment-header">💌 今天想送给爸爸妈妈哪张卡？（可选）</div>
+          <div class="compliment-grid" id="compliment-grid">
+            <!-- 动态渲染 8 张夸奖卡 -->
+          </div>
+        </div>
+        <div class="tomorrow-task-section" id="tomorrow-task-section">
+          <div class="tomorrow-task-header">
+            <span>📋 选一件明天想让爸爸妈妈努力的事</span>
+            <button class="btn btn-secondary btn-sm" id="tomorrow-task-refresh">🔄 换一批 <span id="refresh-count">(2)</span></button>
+          </div>
+          <div class="tomorrow-task-grid" id="tomorrow-task-grid">
+            <!-- 动态渲染 6 个随机任务 -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 页面：孩子端 — 奖励兑换                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="page-rewards" class="page">
+
+      <div class="page-header">
+        <h1>积分兑换</h1>
+      </div>
+
+      <!-- 积分余额 -->
+      <div class="balance-card">
+        <span class="balance-label">当前积分</span>
+        <span class="balance-value" id="rewards-balance">⭐ 0</span>
+        <span class="balance-lifetime" id="rewards-lifetime">累计获得: 0</span>
+      </div>
+
+      <!-- 奖励 Tab -->
+      <div class="growth-tabs" id="rewards-tabs">
+        <button data-rewards-tab="shop" class="active">🎁 奖励兑换</button>
+        <button data-rewards-tab="videoguide">📺 视频指南</button>
+      </div>
+
+      <!-- Tab: 奖励兑换 -->
+      <div id="rewards-tab-shop" class="scroll-area">
+        <div id="rewards-rules-hint" class="rewards-rules-hint"></div>
+        <div id="rewards-section-today"><!-- 今日小奖励 --></div>
+        <div id="rewards-section-weekly"><!-- 本周推荐 --></div>
+        <div id="rewards-section-goal"><!-- 大目标 --></div>
+        <div id="rewards-section-vouchers"><!-- 我的券包 --></div>
+      </div>
+
+      <!-- Tab: 视频指南 -->
+      <div id="rewards-tab-videoguide" class="scroll-area" style="display:none;">
+        <!-- 动态渲染：视频指南 -->
+      </div>
+
+      <!-- 抽奖 Tab（V1 隐藏） -->
+      <div id="lottery-tab" class="lottery-placeholder" style="display:none;">
+        <div class="empty-state">
+          <span class="empty-icon">🎰</span>
+          <span class="empty-text">抽奖功能暂未开放</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 页面：孩子端 — 成长记录                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="page-history" class="page">
+
+      <div class="page-header">
+        <h1>成长记录</h1>
+      </div>
+
+      <!-- 积分汇总 -->
+      <div class="balance-card">
+        <span class="balance-label">当前积分</span>
+        <span class="balance-value" id="history-balance">⭐ 0</span>
+        <span class="balance-lifetime" id="history-lifetime">累计获得: 0</span>
+      </div>
+
+      <!-- 成长 Tab -->
+      <div class="growth-tabs">
+        <button data-growth-tab="calendar" class="active">📅 成长日历</button>
+        <button data-growth-tab="english">📚 英语能量</button>
+        <button data-growth-tab="points">📊 积分流水</button>
+      </div>
+
+      <!-- Tab 容器 -->
+      <div id="growth-calendar-tab" class="scroll-area">
+        <!-- 动态渲染：成长日历 -->
+      </div>
+      <div id="growth-english-tab" class="scroll-area" style="display:none;">
+        <!-- 动态渲染：英语能量 -->
+      </div>
+      <div id="growth-points-tab" class="scroll-area" style="display:none;">
+        <!-- 动态渲染：积分流水 -->
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 页面：家长端 — 今日确认                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="page-confirm" class="page">
+
+      <div class="page-header">
+        <button class="back-btn" id="confirm-back-btn">←</button>
+        <h1>今日确认</h1>
+      </div>
+
+      <!-- 家长子导航 -->
+      <div class="parent-subnav">
+        <button class="btn btn-secondary btn-sm" id="confirm-goto-manage">🎁 奖励管理</button>
+        <button class="btn btn-secondary btn-sm" id="confirm-goto-settings">⚙️ 设置</button>
+      </div>
+
+      <div id="confirm-date-picker" class="date-picker">
+        <button class="btn btn-secondary" id="confirm-date-prev">◀</button>
+        <span id="confirm-date-display"></span>
+        <button class="btn btn-secondary" id="confirm-date-next">▶</button>
+      </div>
+
+      <!-- 今日结算总览卡 -->
+      <div id="confirm-summary-card" class="confirm-summary-card" style="display:none;">
+        <!-- 动态渲染 -->
+      </div>
+
+      <!-- 任务确认列表 -->
+      <div id="confirm-task-list">
+        <!-- 动态渲染 -->
+      </div>
+
+      <!-- V1.5: 家长成长反馈展示 -->
+      <div id="confirm-parent-growth" class="parent-growth-display" style="display:none;">
+        <!-- 动态渲染：今日评分 / 7天能量条 / 徽章 / 夸夸卡 / 明日任务 -->
+      </div>
+
+      <!-- V1.6: 今日鼓励信区域 -->
+      <div id="confirm-parent-letter" class="parent-letter-section" style="display:none;">
+        <!-- 动态渲染：鼓励信状态卡片 -->
+      </div>
+
+      <!-- 结算预览 -->
+      <div id="confirm-summary" class="settle-summary" style="display:none;">
+        <h3>结算预览</h3>
+        <div class="summary-row">
+          <span>学习积分</span>
+          <span id="confirm-raw-study">0</span>
+          <span id="confirm-capped-study" class="text-muted"></span>
+        </div>
+        <div class="summary-row">
+          <span>运动积分</span>
+          <span id="confirm-raw-sport">0</span>
+          <span id="confirm-capped-sport" class="text-muted"></span>
+        </div>
+        <div class="summary-row">
+          <span>基础全完成奖励</span>
+          <span id="confirm-basic-bonus">0</span>
+        </div>
+        <div class="summary-row total">
+          <span>今日总积分</span>
+          <span id="confirm-total-points">0</span>
+        </div>
+        <div class="summary-row">
+          <span>有效学习日</span>
+          <span id="confirm-effective">-</span>
+        </div>
+        <div class="summary-row">
+          <span>连续天数</span>
+          <span id="confirm-streak">0天</span>
+        </div>
+        <div id="confirm-streak-bonus" style="display:none;"></div>
+      </div>
+
+      <!-- 结算按钮 -->
+      <div class="settle-actions">
+        <button class="btn btn-primary btn-large" id="confirm-settle-btn">
+          ✅ 确认结算
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 页面：家长端 — 奖励管理                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="page-manage" class="page">
+
+      <div class="page-header">
+        <button class="back-btn" id="manage-back-btn">←</button>
+        <h1>奖励管理</h1>
+      </div>
+
+      <!-- Tab 切换 -->
+      <div class="tab-bar" id="manage-tabs">
+        <button class="tab active" data-tab="redeems">兑换记录</button>
+        <button class="tab" data-tab="rewards-edit">商品管理</button>
+      </div>
+
+      <!-- 兑换记录列表 -->
+      <div id="manage-redeems" class="scroll-area tab-content active">
+        <!-- 动态渲染 -->
+      </div>
+
+      <!-- 商品管理 -->
+      <div id="manage-rewards-edit" class="scroll-area tab-content" style="display:none;">
+        <div id="manage-storefront-stats"></div>
+        <div id="manage-filter-bar" class="filter-bar"></div>
+        <button class="btn btn-primary" id="manage-add-reward">+ 添加奖励</button>
+        <div id="manage-rewards-list"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 页面：家长端 — 设置                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="page-settings" class="page">
+
+      <div class="page-header">
+        <button class="back-btn" id="settings-back-btn">←</button>
+        <h1>设置</h1>
+      </div>
+
+      <div id="settings-content" class="scroll-area">
+        <!-- 孩子资料 -->
+        <div class="settings-group">
+          <div class="section-title">👤 孩子资料</div>
+          <div class="settings-item" id="settings-child-info">
+            <span id="settings-child-name"></span>
+            <button class="btn btn-secondary btn-sm" id="settings-edit-child">编辑</button>
+          </div>
+          <p id="settings-child-hint" class="text-muted" style="font-size:10px;margin-top:2px;"></p>
+        </div>
+
+        <!-- 任务配置 -->
+        <div class="settings-group">
+          <div class="section-title">📋 任务模板配置</div>
+          <div id="settings-templates-list">
+            <!-- 动态渲染任务模板编辑 -->
+          </div>
+        </div>
+
+        <!-- rulesConfig -->
+        <div class="settings-group">
+          <div class="section-title">⚙️ 积分规则配置</div>
+          <div id="settings-rules">
+            <!-- 动态渲染规则编辑 -->
+          </div>
+        </div>
+
+        <!-- 奖励商品 -->
+        <div class="settings-group">
+          <div class="section-title">🎁 奖励商品</div>
+          <button class="btn btn-secondary" id="settings-goto-manage">去奖励管理 →</button>
+        </div>
+
+        <!-- 视频名单 -->
+        <div class="settings-group">
+          <div class="section-title">📺 视频名单</div>
+          <p class="text-muted" style="font-size:10px;margin-bottom:var(--space-xs);">
+            家长备忘录：记录白名单和黑名单视频 / 频道，不参与任何自动化功能
+          </p>
+          <button class="btn btn-secondary btn-block" id="settings-videolist">管理视频名单 →</button>
+        </div>
+
+        <!-- 备份 -->
+        <div class="settings-group">
+          <div class="section-title">💾 数据管理</div>
+          <div class="settings-item">
+            <span>上次备份</span>
+            <span id="settings-last-backup" class="text-muted">-</span>
+          </div>
+          <div id="settings-backup-overdue" class="text-danger" style="display:none;padding:8px 12px;margin:8px 0;background:var(--color-danger-bg, #fef2f2);border-left:3px solid var(--color-danger);border-radius:4px;font-size:var(--font-size-sm);">
+            ⚠️ 已超过 7 天未备份，建议立即导出完整备份。
+          </div>
+          <button class="btn btn-secondary btn-block mt-sm" id="settings-export-full">📤 导出完整备份</button>
+          <button class="btn btn-secondary btn-block mt-sm" id="settings-import-full">📥 导入完整备份</button>
+          <button class="btn btn-secondary btn-block mt-sm" id="settings-export-template">📤 导出配置模板</button>
+          <button class="btn btn-secondary btn-block mt-sm" id="settings-import-template">📥 导入配置模板</button>
+          <button class="btn btn-danger btn-block mt-sm" id="settings-reset-all">🗑️ 一键重置（清除所有数据）</button>
+        </div>
+
+        <!-- PIN -->
+        <div class="settings-group">
+          <div class="section-title">🔑 安全</div>
+          <button class="btn btn-secondary btn-block" id="settings-change-pin">修改 PIN 码</button>
+        </div>
+
+        <!-- 关于 -->
+        <div class="settings-group">
+          <div class="section-title">ℹ️ 关于</div>
+          <p class="text-muted" style="font-size: var(--font-size-sm);">
+            暑假任务打卡积分系统 V2.0<br>
+            低摩擦习惯积分制<br>
+            PWA · IndexedDB · 离线可用
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- PIN 码验证浮层                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="page-pin" class="modal-overlay">
+      <div class="modal pin-modal">
+        <h2>🔐 家长验证</h2>
+        <p>请输入 4 位 PIN 码</p>
+        <div class="pin-input-group" id="pin-dots-container">
+          <input type="text" id="pin-hidden-input" class="pin-hidden" inputmode="numeric" maxlength="4" autocomplete="off">
+          <div class="pin-dot" data-index="0"></div>
+          <div class="pin-dot" data-index="1"></div>
+          <div class="pin-dot" data-index="2"></div>
+          <div class="pin-dot" data-index="3"></div>
+        </div>
+        <p id="pin-error" class="text-danger" style="display:none;min-height:20px;"></p>
+        <div class="modal-buttons">
+          <button class="btn btn-secondary" id="pin-cancel-btn">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 底部导航                                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-page="page-challenge">
+        <span class="nav-icon">📋</span>
+        <span>今日挑战</span>
+      </button>
+      <button class="nav-item" data-page="page-rewards">
+        <span class="nav-icon">🎁</span>
+        <span>奖励</span>
+      </button>
+      <button class="nav-item" data-page="page-history">
+        <span class="nav-icon">📊</span>
+        <span>成长</span>
+      </button>
+      <button class="nav-item parent-only" data-page="page-confirm">
+        <span class="nav-icon">👨‍👩‍👧</span>
+        <span>家长</span>
+      </button>
+    </nav>
+
+    <!-- ─── 全局模态框 ─── -->
+    <div id="global-modal" class="modal-overlay">
+      <div class="modal" id="global-modal-content">
+        <!-- 动态内容 -->
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
