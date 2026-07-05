@@ -1,7 +1,7 @@
 // Service Worker – 暑假任务打卡积分系统 V3 → V4
 // 缓存策略：JS/CSS/HTML → Stale-While-Revalidate（立即返回缓存，后台更新）
 // 其他资源（图片、字体等）→ Cache First
-const CACHE_NAME = 'daka-pwa-v12-20260703';
+const CACHE_NAME = 'daka-pwa-v13-20260705';
 const STATIC_ASSETS = [
   './',
   './index.html',

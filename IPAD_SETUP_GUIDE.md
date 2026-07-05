@@ -41,13 +41,11 @@ Node.js 是用来运行部署脚本的环境。
 - **Windows：** 在项目文件夹里按住 Shift + 右键 → "在此处打开 PowerShell 窗口"
 - **Mac：** 打开 "终端"（Terminal），输入 `cd ` 然后把项目文件夹拖进去，回车
 
-### 4. 注册 / 登录 Vercel
+### 4. 部署平台
 
-Vercel 是一个免费部署平台（支持 HTTPS，PWA 必需）。
+本项目使用 **GitHub Pages** 部署，自动提供 HTTPS（PWA 必需）。
 
-1. 打开 **https://vercel.com**
-2. 点击 **Sign Up**，推荐用 GitHub 账号登录
-3. 登录后保持页面打开即可
+部署只需推送代码即可，无需额外安装 CLI 工具。
 
 ---
 
@@ -59,10 +57,9 @@ Vercel 是一个免费部署平台（支持 HTTPS，PWA 必需）。
 
 ```powershell
 node -v
-npm -v
 ```
 
-应该显示版本号，例如 `v20.10.0` 和 `10.2.3`。如果没有，请重新安装 Node.js。
+应该显示版本号，例如 `v20.10.0`。如果没有，请重新安装 Node.js。
 
 ### Step 2: 进入项目目录
 
@@ -72,21 +69,7 @@ cd "你的项目文件夹路径"
 
 例如：`cd "C:\Users\你的用户名\Desktop\打卡"`
 
-### Step 3: 安装 Vercel CLI（命令行工具）
-
-```powershell
-npm install -g vercel
-```
-
-### Step 4: 登录 Vercel
-
-```powershell
-vercel login
-```
-
-浏览器会自动弹出 Vercel 登录页面，按提示完成授权。
-
-### Step 5: 运行 PWA 检查
+### Step 3: 运行 PWA 检查
 
 ```powershell
 node scripts/check-pwa.js
@@ -94,7 +77,7 @@ node scripts/check-pwa.js
 
 应该看到 `🎉 PWA 配置完全通过，可以部署！` 如果没有通过，先修复报错再继续。
 
-### Step 6: 更新缓存版本号
+### Step 4: 更新缓存版本号
 
 ```powershell
 node scripts/bump-cache-version.js
@@ -102,27 +85,17 @@ node scripts/bump-cache-version.js
 
 这会自动更新版本号，确保 iPad 上线后能拿到最新代码。
 
-### Step 7: 部署到 Vercel
+### Step 5: 部署
 
 ```powershell
-vercel --prod
+git add -A; git commit -m "更新部署"; git push
 ```
 
-**第一次部署时，Vercel 会问几个问题：**
+推送后约 1-2 分钟自动部署完成。
 
-| 问题 | 回答 |
-|------|------|
-| Set up and deploy? | Y（回车） |
-| Which scope? | 选择你的账号（回车） |
-| Link to existing project? | N（回车，首次部署） |
-| What's your project's name? | 直接回车（用默认名） |
-| In which directory is your code? | ./（回车） |
-| Want to override settings? | N（回车） |
-
-部署完成后，你会看到一个网址，类似：
-
+部署网址：
 ```
-https://daka-pwa.vercel.app
+https://clairechen0088-sketch.github.io/daka-pwa/
 ```
 
 **🔴 把这个网址记下来，iPad 上要用！**
@@ -137,7 +110,6 @@ https://daka-pwa.vercel.app
 
 ```bash
 node -v
-npm -v
 ```
 
 应该显示版本号。如果没有，请重新安装 Node.js。
@@ -150,21 +122,7 @@ cd "你的项目文件夹路径"
 
 例如：`cd ~/Desktop/打卡`
 
-### Step 3: 安装 Vercel CLI
-
-```bash
-npm install -g vercel
-```
-
-### Step 4: 登录 Vercel
-
-```bash
-vercel login
-```
-
-浏览器会自动弹出 Vercel 登录页面，按提示完成授权。
-
-### Step 5: 运行 PWA 检查
+### Step 3: 运行 PWA 检查
 
 ```bash
 node scripts/check-pwa.js
@@ -172,33 +130,23 @@ node scripts/check-pwa.js
 
 应该看到 `🎉 PWA 配置完全通过，可以部署！`
 
-### Step 6: 更新缓存版本号
+### Step 4: 更新缓存版本号
 
 ```bash
 node scripts/bump-cache-version.js
 ```
 
-### Step 7: 部署到 Vercel
+### Step 5: 部署
 
 ```bash
-vercel --prod
+git add -A; git commit -m "更新部署"; git push
 ```
 
-**第一次部署时，Vercel 会问几个问题：**
+推送后约 1-2 分钟自动部署完成。
 
-| 问题 | 回答 |
-|------|------|
-| Set up and deploy? | Y（回车） |
-| Which scope? | 选择你的账号（回车） |
-| Link to existing project? | N（回车，首次部署） |
-| What's your project's name? | 直接回车 |
-| In which directory is your code? | ./（回车） |
-| Want to override settings? | N（回车） |
-
-部署完成后，你会看到一个网址：
-
+部署网址：
 ```
-https://daka-pwa.vercel.app
+https://clairechen0088-sketch.github.io/daka-pwa/
 ```
 
 **🔴 把这个网址记下来！**
@@ -213,10 +161,10 @@ https://daka-pwa.vercel.app
 
 找到 iPad 上的 **Safari** 图标（像指南针 🧭），点开它。
 
-### 2. 输入 Vercel 网址
+### 2. 输入网址
 
 1. 点击屏幕顶部的地址栏
-2. 输入你刚才得到的 `https://xxx.vercel.app` 链接
+2. 输入 `https://clairechen0088-sketch.github.io/daka-pwa/`
 3. 点击键盘上的 **"前往"**（Go）
 
 > 💡 **小技巧：** 如果网址太长，可以先用电脑把网址通过微信/QQ 发给自己，然后在 iPad 上复制粘贴到 Safari。
@@ -306,16 +254,11 @@ node scripts/bump-cache-version.js
 node scripts/bump-cache-version.js
 ```
 
-2. **重新部署**
+2. **提交并推送**
 
 ```powershell
-# Windows
-vercel --prod
-```
-
-```bash
-# Mac
-vercel --prod
+# Windows / Mac 通用
+git add -A; git commit -m "更新部署"; git push
 ```
 
 ### iPad 端
@@ -402,14 +345,14 @@ vercel --prod
 **A:** 说明没有正确安装 PWA。请确认：
 1. 是不是用 **Safari** 打开的？（不可以用微信/Chrome）
 2. 是不是通过 **"添加到主屏幕"** 安装的？（不是"添加到书签"）
-3. 网站的 HTTPS 是不是有效的？（Vercel 自动提供，不需要额外操作）
+3. 网站的 HTTPS 是不是有效的？（GitHub Pages 自动提供，不需要额外操作）
 
 ### Q: 显示"无法连接"或白屏？
 
 **A:** 
 1. 检查 iPad 是否连接了网络（首次加载需要联网）
-2. 确认 Vercel 部署是否成功
-3. 如果之前能用，突然不行了：可能是 Vercel 服务暂时故障，等几分钟再试
+2. 确认代码推送是否成功
+3. 如果之前能用，突然不行了：可能是 GitHub Pages 服务暂时故障，等几分钟再试
 
 ### Q: 离線后能做什么？
 
@@ -433,10 +376,10 @@ vercel --prod
 ### Q: 部署后 iPad 一直显示旧版本？
 
 **A:** 
-1. 首先确认电脑端已运行 `node scripts/bump-cache-version.js` 并重新 `vercel --prod`
+1. 首先确认电脑端已运行 `node scripts/bump-cache-version.js` 并推送代码
 2. 在 iPad 上完全关闭 App（从后台划掉）
 3. 重新打开，等待 1-2 秒
-4. 如果还是旧版，打开 Safari 访问一次 Vercel 链接再关闭
+4. 如果还是旧版，打开 Safari 访问一次网站链接再关闭
 5. 再试一次从主屏幕打开
 6. **不要清除网站数据** — 这会清空所有打卡记录！
 
@@ -450,15 +393,13 @@ vercel --prod
 ╠══════════════════════════════════════════════════╣
 ║                                                  ║
 ║  📦 首次部署：                                   ║
-║     npm install -g vercel                        ║
-║     vercel login                                 ║
 ║     node scripts/check-pwa.js                    ║
 ║     node scripts/bump-cache-version.js           ║
-║     vercel --prod                                ║
+║     git add -A; git commit -m "deploy"; git push ║
 ║                                                  ║
 ║  🔄 更新部署：                                   ║
 ║     node scripts/bump-cache-version.js           ║
-║     vercel --prod                                ║
+║     git add -A; git commit -m "deploy"; git push ║
 ║                                                  ║
 ║  📱 iPad 安装：                                  ║
 ║     Safari → 打开网址 → 分享 → 添加到主屏幕       ║
@@ -473,6 +414,6 @@ vercel --prod
 
 ---
 
-> 📅 最后更新: 2026-07-02
-> 📝 版本: V2.0
-> 🔗 部署网址: https://daka-pwa.vercel.app
+> 📅 最后更新: 2026-07-05
+> 📝 版本: V3.0
+> 🔗 部署网址: https://clairechen0088-sketch.github.io/daka-pwa/
