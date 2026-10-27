@@ -47,9 +47,9 @@ async function fixture(t) {
   const dialogs = [];
   page.on('dialog', async dialog => { dialogs.push(dialog.message()); await dialog.accept(); });
   await page.goto(origin);
-  await page.waitForFunction(() => navigator.serviceWorker.controller && App.getCurrentChild());
+  await page.waitForFunction(() => typeof App !== 'undefined' && navigator.serviceWorker.controller && App.getCurrentChild());
   await page.reload();
-  await page.waitForFunction(() => App.getCurrentChild());
+  await page.waitForFunction(() => typeof App !== 'undefined' && App.getCurrentChild());
   await page.evaluate(async ({ childId, date }) => {
     await DB.db.child.add({ id: childId, name: '测试孩子', avatar: 'football', currentBalance: 100, lifetimeEarnedPoints: 100 });
     await DB.db.appConfig.update('singleton', { boundChildId: childId });
@@ -124,7 +124,7 @@ test('native IndexedDB: two tabs settle once, including milestone points and car
   const { context, page } = await fixture(t);
   const second = await context.newPage();
   await second.goto(origin);
-  await second.waitForFunction(() => App.getCurrentChild());
+  await second.waitForFunction(() => typeof App !== 'undefined' && App.getCurrentChild());
   const args = { childId: CHILD, date: DATE, decisions };
   const settle = args => Engine.settle(args.childId, args.date, args.decisions);
   const results = await Promise.all([page.evaluate(settle, args), second.evaluate(settle, args)]);
@@ -212,13 +212,13 @@ test('PWA reload and settlement work offline with native IndexedDB history intac
   const { context, page } = await fixture(t);
   await context.setOffline(true);
   await page.reload();
-  await page.waitForFunction(() => App.getCurrentChild());
+  await page.waitForFunction(() => typeof App !== 'undefined' && App.getCurrentChild());
   const result = await page.evaluate(({ childId, date, decisions }) => Engine.settle(childId, date, decisions),
     { childId: CHILD, date: DATE, decisions });
   assert.equal(result.success, true);
   await assertSettled(page);
   await page.reload();
-  await page.waitForFunction(() => App.getCurrentChild());
+  await page.waitForFunction(() => typeof App !== 'undefined' && App.getCurrentChild());
   await assertSettled(page);
   const duplicate = await page.evaluate(({ childId, date, decisions }) => Engine.settle(childId, date, decisions),
     { childId: CHILD, date: DATE, decisions });
