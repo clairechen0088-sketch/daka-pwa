@@ -8,6 +8,7 @@ const ConfirmPage = (() => {
   let currentTasks = [];
   let currentDecisions = {}; // { taskTemplateId: 'approved' | 'rejected' }
   let currentSummary = null;
+  let isSettling = false;
 
   // ─── UI 折叠状态（模块级，不持久化）───
   let uiState = {
@@ -61,6 +62,7 @@ const ConfirmPage = (() => {
   //  渲染入口
   // ═══════════════════════════════════════════
   async function render(date) {
+    if (isSettling) return;
     const child = App.getCurrentChild();
     const config = App.getCurrentConfig();
     if (!child || !config) return;
@@ -689,6 +691,7 @@ const ConfirmPage = (() => {
 
     // 日期切换
     document.getElementById('confirm-date-prev').onclick = async () => {
+      if (isSettling) return;
       // 保存当前 UI 折叠状态
       const savedExpanded = new Set(uiState.expandedCategories);
       const savedShowApproved = uiState.showApprovedTasks;
@@ -712,6 +715,7 @@ const ConfirmPage = (() => {
     };
 
     document.getElementById('confirm-date-next').onclick = async () => {
+      if (isSettling) return;
       const today = Utils.getToday(config.dayCutoffHour);
       const next = Utils.addDays(currentDate, 1);
       if (next > today) return; // 不能超过今天
@@ -745,7 +749,11 @@ const ConfirmPage = (() => {
 
   function updateSettleButton() {
     const btn = document.getElementById('confirm-settle-btn');
-    if (currentSummary) {
+    if (isSettling) {
+      btn.textContent = '结算中...';
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+    } else if (currentSummary) {
       btn.textContent = '✅ 已结算';
       btn.disabled = true;
       btn.style.opacity = '0.5';
@@ -760,9 +768,11 @@ const ConfirmPage = (() => {
   //  执行结算
   // ═══════════════════════════════════════════
   async function executeSettle(child) {
-    const btn = document.getElementById('confirm-settle-btn');
-    btn.textContent = '结算中...';
-    btn.disabled = true;
+    if (isSettling || currentSummary) return;
+    isSettling = true;
+    updateSettleButton();
+    const settleDate = currentDate;
+    let committed = false;
 
     try {
       // V2.1: 将未确认的任务默认视为驳回，确保所有任务有明确决策
@@ -772,14 +782,15 @@ const ConfirmPage = (() => {
         settleDecisions[task.taskTemplateId] = (d === 'approved') ? 'approved' : 'rejected';
       }
 
-      const result = await Engine.settle(child.id, currentDate, settleDecisions);
+      const result = await Engine.settle(child.id, settleDate, settleDecisions);
 
       if (result.success) {
+        committed = true;
         currentSummary = result.data;
         updateSettleButton();
 
         // V2.1: 结算后刷新任务状态，确保 currentDecisions 与结算结果一致
-        currentTasks = await DB.getDailyTasks(child.id, currentDate);
+        currentTasks = await DB.getDailyTasks(child.id, settleDate);
         currentDecisions = {};
         currentTasks.forEach(t => {
           currentDecisions[t.taskTemplateId] = t.parentStatus;
@@ -825,15 +836,18 @@ const ConfirmPage = (() => {
           console.error('[Confirm] 鼓励信弹窗异常（不影响结算）:', letterErr);
         }
       } else {
+        // 其他页面可能已经完成结算，刷新状态后保持按钮锁定。
+        currentSummary = await DB.getDailySummary(child.id, currentDate);
         alert('结算失败：' + result.error);
-        btn.textContent = '✅ 确认结算';
-        btn.disabled = false;
       }
     } catch (err) {
       console.error('[Confirm] Settle error:', err);
-      alert('结算失败：' + err.message);
-      btn.textContent = '✅ 确认结算';
-      btn.disabled = false;
+      alert(committed
+        ? '结算已完成，页面刷新失败，请重新打开页面查看：' + err.message
+        : '结算失败，本次结算未保存，请重试：' + err.message);
+    } finally {
+      isSettling = false;
+      updateSettleButton();
     }
   }
 

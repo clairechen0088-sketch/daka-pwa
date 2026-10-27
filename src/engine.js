@@ -15,6 +15,18 @@ const Engine = (() => {
    * @returns {object} 结算结果
    */
   async function settle(childId, date, parentDecisions) {
+    // 检查和写入必须在同一个事务内：同一数据库的并发结算会串行执行。
+    // 包含任务生成/规则读取依赖的表，以及积分、里程碑和余额的全部写入表。
+    return DB.db.transaction('rw',
+      DB.db.dailyTasks, DB.db.dailySummaries, DB.db.pointRecords,
+      DB.db.streak, DB.db.streakAwardRecords, DB.db.protectionCardRecords,
+      DB.db.child, DB.db.taskTemplates, DB.db.rulesConfig,
+      async () => settleInTransaction(childId, date, { ...parentDecisions })
+    );
+  }
+
+  // 写入异常必须向外抛出，由 Dexie 回滚；不能在事务内捕获后返回成功。
+  async function settleInTransaction(childId, date, parentDecisions) {
     const now = Utils.nowISO();
 
     // ── Step 1: 幂等检查 ──
@@ -25,9 +37,29 @@ const Engine = (() => {
 
     // 检查是否有已结算的 dailyTask
     const existingTasks = await DB.getDailyTasks(childId, date);
-    const hasSettled = existingTasks.some(t => t.settled);
+    const hasSettled = existingTasks.some(t => t.settled || t.pointRecordId);
     if (hasSettled) {
       return { success: false, error: '该日期已有任务被结算' };
+    }
+
+    // 旧版可能只写入了部分流水/奖励。保留历史并停止重试，避免再次发分。
+    // 兑换、退款等非每日结算流水不应阻止正常结算。
+    const settlementTypes = ['taskEarn', 'basicStudyBonus', 'streakBonus'];
+    const existingPoints = await DB.db.pointRecords
+      .where('[childId+date]').equals([childId, date])
+      .filter(r => settlementTypes.includes(r.type)).first();
+    const existingAward = await DB.db.streakAwardRecords
+      .where({ childId, date }).first();
+    const existingCard = await DB.db.protectionCardRecords
+      .where('childId').equals(childId)
+      .filter(r => r.relatedDate === date && r.type === 'earn' && r.relatedStreakAwardId)
+      .first();
+    if (existingPoints || existingAward || existingCard) {
+      return { success: false, error: '该日期存在未完成的历史结算记录，请先核对积分流水，避免重复发放' };
+    }
+
+    if (!await DB.getChild(childId)) {
+      return { success: false, error: '孩子不存在，无法结算' };
     }
 
     // ── Step 2: 收集当日 dailyTask ──
@@ -208,9 +240,11 @@ const Engine = (() => {
         const existingAward = await DB.getStreakAward(childId, streakResult.streakPeriodStart, ms.days);
 
         if (!existingAward) {
+          let milestonePointRecordId = null;
           // 发放积分奖励
           if (ms.points > 0) {
-            await createPointRecord('streakBonus', `连续${ms.days}天奖励`, ms.points);
+            const record = await createPointRecord('streakBonus', `连续${ms.days}天奖励`, ms.points);
+            milestonePointRecordId = record.id;
             streakBonusPoints += ms.points;
           }
 
@@ -241,7 +275,7 @@ const Engine = (() => {
             streakPeriodStart: streakResult.streakPeriodStart,
             pointsAwarded: ms.points,
             protectionCardsAwarded: ms.protectionCards,
-            pointRecordId: pointRecordIds[pointRecordIds.length - 1] || null,
+            pointRecordId: milestonePointRecordId,
             chanceRecordIds: []
           });
 
@@ -300,7 +334,7 @@ const Engine = (() => {
 
     // ── Step 11: 标记所有 dailyTask 已结算 ──
     for (const task of tasks) {
-      await DB.db.dailyTasks.update(task.id, {
+      const updated = await DB.db.dailyTasks.update(task.id, {
         parentStatus: task.parentStatus,
         rawPoints: task.rawPoints,
         cappedPoints: task.cappedPoints,
@@ -308,6 +342,7 @@ const Engine = (() => {
         settled: true,
         pointRecordId: task.pointRecordId
       });
+      if (updated !== 1) throw new Error('任务不存在，结算已回滚');
     }
 
     // 更新连续状态
